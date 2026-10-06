@@ -2,6 +2,11 @@
 
 Chrome extension that saves your tab groups as bookmark folders with matching names.
 
+<p>
+  <img src="screenshots/popup.png" alt="Popup listing tab groups with Save buttons" width="360">
+  <img src="screenshots/saved.png" alt="Popup after Save All" width="360">
+</p>
+
 ## Install
 
 1. Clone this repo (or download it as a ZIP and unzip).
