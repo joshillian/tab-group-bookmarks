@@ -10,7 +10,6 @@ const COLOR_MAP = {
   orange: "#e8710a",
 };
 
-const BOOKMARK_ROOT_NAME = "Tab Groups";
 const DEFAULT_PARENT_ID = "2"; // Other Bookmarks
 
 async function getSavedParentId() {
@@ -18,40 +17,33 @@ async function getSavedParentId() {
   return parentId;
 }
 
-async function getOrCreateRootFolder() {
-  const parentId = await getSavedParentId();
-  const results = await chrome.bookmarks.search({ title: BOOKMARK_ROOT_NAME });
-  const existing = results.find((b) => !b.url && b.parentId === parentId);
-  if (existing) return existing;
-
-  return chrome.bookmarks.create({ parentId, title: BOOKMARK_ROOT_NAME });
-}
-
 async function saveGroup(group, tabs) {
-  const root = await getOrCreateRootFolder();
+  const parentId = await getSavedParentId();
   const folderName = group.title || `Unnamed (${group.color})`;
 
-  // Find existing folder with same name under root, or create new one
-  const children = await chrome.bookmarks.getChildren(root.id);
+  // Find existing folder with same name under the target, or create new one
+  const children = await chrome.bookmarks.getChildren(parentId);
   let folder = children.find((c) => !c.url && c.title === folderName);
 
+  // Track URLs already in the folder so re-saving appends without duplicates
+  const existingUrls = new Set();
   if (folder) {
-    // Clear existing bookmarks in this folder before re-saving
     const existing = await chrome.bookmarks.getChildren(folder.id);
     for (const bm of existing) {
-      await chrome.bookmarks.removeTree(bm.id);
+      if (bm.url) existingUrls.add(bm.url);
     }
   } else {
     folder = await chrome.bookmarks.create({
-      parentId: root.id,
+      parentId,
       title: folderName,
     });
   }
 
-  // Add each tab as a bookmark, skipping non-bookmarkable URLs
+  // Add each tab as a bookmark, skipping non-bookmarkable and already-saved URLs
   for (const tab of tabs) {
     try {
-      if (tab.url && /^https?:\/\//.test(tab.url)) {
+      if (tab.url && /^https?:\/\//.test(tab.url) && !existingUrls.has(tab.url)) {
+        existingUrls.add(tab.url);
         await chrome.bookmarks.create({
           parentId: folder.id,
           title: tab.title || tab.url,

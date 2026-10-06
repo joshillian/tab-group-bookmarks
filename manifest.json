@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Tab Group Bookmarks",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Save tab groups to bookmark folders with matching names.",
   "permissions": ["tabGroups", "tabs", "bookmarks", "storage"],
   "action": {
