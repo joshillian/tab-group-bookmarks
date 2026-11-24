@@ -21,4 +21,6 @@ To update: `git pull`, then click the reload icon on the extension in `chrome://
 - Pick a destination with **Save to**.
 - Click **Save** on a group, or **Save All**.
 
+- Or, from a tab inside a group: right-click the page → **Save tab group "…"**, or press **⌘⇧S** (Mac) / **Alt+Shift+S** (Windows/Linux). The extension icon briefly shows ✓ when it's saved. Change the shortcut at `chrome://extensions/shortcuts`.
+
 Each group is saved as a folder named after the group, inside the selected destination. If that folder already exists, new tabs are appended and URLs already saved there are skipped.
